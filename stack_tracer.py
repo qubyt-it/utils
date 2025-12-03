@@ -40,9 +40,11 @@ class IndentedStdout:
 
 # --- The Main Tracer ---
 class StackTracer:
-    def __init__(self, show_timing=True, output_file=None):
+    def __init__(self, show_timing=True, show_input=True, show_output=True, output_file=None):
         self.depth = 0
         self.show_timing = show_timing
+        self.show_input = show_input
+        self.show_output = show_output
         self._output_file_path = output_file
         self._file_handle = None
         
@@ -80,8 +82,12 @@ class StackTracer:
             arg_list = [repr(a) for a in args] + [f"{k}={v!r}" for k, v in kwargs.items()]
             all_args = ", ".join(arg_list)
 
+            input_str = ""
+            if self.show_input:
+                input_str = f"({all_args})"
+
             # Log CALL
-            self._log(f"{indent}|--> CALL {func.__name__}({all_args})")
+            self._log(f"{indent}|--> CALL {func.__name__}{input_str}")
             
             self.depth += 1
             start_time = time.perf_counter()
@@ -96,8 +102,12 @@ class StackTracer:
                     elapsed = (time.perf_counter() - start_time) * 1000
                     time_str = f" [Time: {elapsed:.2f}ms]"
 
+                output_str = ""
+                if self.show_output:
+                    output_str = f": {repr(result)}"
+
                 self.depth -= 1
-                self._log(f"{indent}|<-- RETURN {func.__name__}: {repr(result)}{time_str}")
+                self._log(f"{indent}|<-- RETURN {func.__name__}{output_str}{time_str}")
                 return result
 
             except Exception as e:
