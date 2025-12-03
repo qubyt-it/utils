@@ -21,7 +21,7 @@ class IndentedStdout:
 
         # Prepare the indentation string (e.g. "|   |   ")
         # We add one extra pipe for the current function's body
-        indent = "|   " * (self.tracer.depth) + "| == "
+        indent = "|   " * (self.tracer.depth) + "| "
         
         # We process the text to inject indentation after every newline
         # This handles cases like print("Line1\nLine2")
